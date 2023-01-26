@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <pre id="codePreview" class="p-4 text-gray-400 bg-slate-900"></pre>
+    <script>
+        const code = document.getElementById("codePreview")
+        const json_data = [{
+            id: "a1c33bd1-0528-4de3-a745-44d95e7ac3d8",
+            nacionalidad: "argentino",
+            nombre: "Julián",
+            edad: 33,
+            hermanos: [
+                {
+                    nombre: "Nicolas",
+                },
+                {
+                    nombre: "Javier"
+                }
+            ],
+            estudios: [
+                {
+                    universitario: "UBA",
+                    notas: [7, 8, 9, 10]
+                }
+            ],
+            documento: {
+                nro: 1234,
+                tipo: "DNI"
+            }
+        }]
+
+        const formated_json = {}
+
+        function iterateObject(obj) {
+            for (prop in obj) {
+                if (typeof (obj[prop]) === "object") {
+                    iterateObject(obj[prop])
+                } else {
+                    //console.log(`<span>${prop}</span><span>:</span><span>${obj[prop]}</span>`)
+                    obj[prop] = `'<span>${obj[prop]}</span>'`
+                }
+            }
+        }
+
+        iterateObject(json_data)
+
+    </script>
+
+</body>
+
+</html>
