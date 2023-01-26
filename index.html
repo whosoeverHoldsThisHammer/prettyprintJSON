@@ -6,10 +6,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
+
     <pre id="codePreview" class="p-4 text-gray-400 bg-slate-900"></pre>
+
     <script>
+
         const code = document.getElementById("codePreview")
-        const json_data = [{
+
+        let json_data = [{
             id: "a1c33bd1-0528-4de3-a745-44d95e7ac3d8",
             nacionalidad: "argentino",
             nombre: "Julián",
@@ -29,13 +33,13 @@
                 }
             ],
             documento: {
-                nro: 1234,
+                id: 1234,
                 tipo: "DNI"
             }
         }]
 
         function showMessage(e){
-            alert(e.target.id)
+            alert("id: " + e.target.id)
         }
 
         function iterateObject(obj) {
@@ -44,20 +48,39 @@
                     iterateObject(obj[prop])
                 } else {
                     if(prop === "id"){
-                        obj[prop] = `<span id=${obj[prop]} class='text-red-800 px-1 py-0.5 bg-red-50 rounded' onclick='showMessage(event)'>${obj[prop]}</span>`
+                        obj[prop] = `<span id=${obj[prop]} class='text-emerald-500 px-1 bg-slate-700 rounded cursor-pointer' onclick='showMessage(event)'>${obj[prop]}</span>`
+
                     } else {
                         obj[prop] = `<span class='text-sky-400'>${obj[prop]}</span>`
                     }
+                    
                 }
             }
         }
+        
+        const regex_pattern = '"([^"]+?)"\s*:'
+        let formated = JSON.stringify(json_data, undefined, 4)
 
-        iterateObject(json_data)
+        // Pinta valores que son ids
+        formated = formated.replace(/(?:\"|\')(?<key>[\"id"]+)(?:\"|\')(?:\:\s*)(?:\"|\')?(?<value>[\w\s-]*)(?:\"|\')?/g, s => {           
+            const parts = (s.split(':'))
+            const key = `${parts[0]}:`
+            
+            const value = `<span id=${parts[1].slice(1)} class='text-emerald-500 px-0.5 bg-slate-700 rounded cursor-pointer' onclick='showMessage(event)'>${parts[1].slice(1)}</span>`
+            s = key + " " + value
+            console.log(s)
+            return key + " " +  value
 
-        code.innerHTML = JSON.stringify(json_data, undefined, 4);
+        });
+
+        // Pinta claves
+        formated = formated.replace(/"([^"]+?)"\s*:/g, s => {           
+            return `<span class='text-pink-400'>${s.slice(0, -1)}</span>:`
+        });
+
+        code.innerHTML = formated
 
     </script>
-
 </body>
 
 </html>
