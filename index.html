@@ -34,20 +34,29 @@
             }
         }]
 
-        const formated_json = {}
+        function showMessage(e){
+            alert(e.target.id)
+        }
 
         function iterateObject(obj) {
             for (prop in obj) {
                 if (typeof (obj[prop]) === "object") {
                     iterateObject(obj[prop])
                 } else {
-                    //console.log(`<span>${prop}</span><span>:</span><span>${obj[prop]}</span>`)
-                    obj[prop] = `'<span>${obj[prop]}</span>'`
+                    if(prop === "id"){
+                        obj[prop] = `<span id=${obj[prop]} class='text-red-800 px-1 py-0.5 bg-red-50 rounded' onclick='showMessage(event)'>${obj[prop]}</span>`
+                    } else {
+                        obj[prop] = `<span class='text-sky-400'>${obj[prop]}</span>`
+                    }
                 }
             }
         }
 
         iterateObject(json_data)
+
+        //console.log(json_data)
+        //code.innerHTML = json_data
+        code.innerHTML = JSON.stringify(json_data, undefined, 4);
 
     </script>
 
