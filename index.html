@@ -20,6 +20,7 @@
             edad: 33,
             hermanos: [
                 {
+                    id: 447688,
                     nombre: "Nicolas",
                 },
                 {
@@ -33,7 +34,7 @@
                 }
             ],
             documento: {
-                id: 1234,
+                id: 30926334,
                 tipo: "DNI"
             }
         }]
@@ -41,41 +42,24 @@
         function showMessage(e){
             alert("id: " + e.target.id)
         }
-
-        function iterateObject(obj) {
-            for (prop in obj) {
-                if (typeof (obj[prop]) === "object") {
-                    iterateObject(obj[prop])
-                } else {
-                    if(prop === "id"){
-                        obj[prop] = `<span id=${obj[prop]} class='text-emerald-500 px-1 bg-slate-700 rounded cursor-pointer' onclick='showMessage(event)'>${obj[prop]}</span>`
-
-                    } else {
-                        obj[prop] = `<span class='text-sky-400'>${obj[prop]}</span>`
-                    }
-                    
-                }
-            }
-        }
         
-        const regex_pattern = '"([^"]+?)"\s*:'
         let formated = JSON.stringify(json_data, undefined, 4)
 
-        // Pinta valores que son ids
-        formated = formated.replace(/(?:\"|\')(?<key>[\"id"]+)(?:\"|\')(?:\:\s*)(?:\"|\')?(?<value>[\w\s-]*)(?:\"|\')?/g, s => {           
-            const parts = (s.split(':'))
-            const key = `${parts[0]}:`
-            
-            const value = `<span id=${parts[1].slice(1)} class='text-emerald-500 px-0.5 bg-slate-700 rounded cursor-pointer' onclick='showMessage(event)'>${parts[1].slice(1)}</span>`
-            s = key + " " + value
-            console.log(s)
-            return key + " " +  value
+        formated = formated.replace(/(?:\"|\')(?<key>[\w\s-áéíóú]+)(?:\"|\')(?:\:\s*)(?:\"|\')?(?<value>[\w\s-áéíóú]*)(?:\"|\')?/g, s => {           
+            const parts = s.split(':')
+            let key = parts[0].slice(1, -1)
+            let value
 
-        });
+            if(key === "id"){
+                value = `<span id=${parts[1].slice(1)} class='text-sky-500 px-1 py-0.5 bg-slate-50 bg-opacity-10 rounded cursor-pointer' onclick='showMessage(event)'>${parts[1].slice(1)}</span>`
+            } else {
 
-        // Pinta claves
-        formated = formated.replace(/"([^"]+?)"\s*:/g, s => {           
-            return `<span class='text-pink-400'>${s.slice(0, -1)}</span>:`
+                value = `<span class="text-slate-300">${parts[1].slice(1)}</span>`
+            }
+
+            key = `<span class="text-pink-400">${parts[0]}</span>: `
+
+            return key + value
         });
 
         code.innerHTML = formated
