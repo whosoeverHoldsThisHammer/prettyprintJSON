@@ -5,15 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-full w-full flex items-center justify-center">
+<body class="min-h-full w-full py-16 flex items-center justify-center">
 
     <div class="w-full max-w-3xl">
         <div class="flex overflow-auto rounded-xl">
             <div id="count" class="sticky left-0 flex-col pl-4 pr-3 py-2 text-right text-slate-500 bg-slate-800"></div>
             <pre id="codePreview" class="grow px-4 py-2 text-slate-500 bg-slate-900"></pre>
         </div>
-        
-        
     </div>
     <script>
         const count = document.getElementById("count")
@@ -23,6 +21,16 @@
             id: "a1c33bd1-0528-4de3-a745-44d95e7ac3d8",
             nacionalidad: "argentino",
             nombre: "Julián",
+            padres: [
+                {
+                    id: "00f052c9-5b9b-4ebc-af38-065ef5fa6277",
+                    nombre: "Horacio",
+                },
+                {
+                    id: "f1bf5367-bb3f-4c72-9bea-9d104a6c11c0",
+                    nombre: "Silvia",
+                },
+            ],
             hermanos: [
                 {
                     id: "4b89d3ab-d3bf-4189-9438-c0ebc6b56ea1",
@@ -38,24 +46,32 @@
                     nombre: "Ciencias de la computación",
                     institucion: "UBA",
                     nivel: "universitario",
-                    materias: {
-                        nombre: "Algoritmos 1",
+                    cursando: {
+                        nombre: "Algoritmos II",
                         notas: [7,8],
-                        estado: "Adeuda final"
+                        estado: "Cursada aprobada",
+                        correlativas: ["Fundamentos de la Programación", "Matemática"]
                     }
                 }
             ],
             documento: {
                 tipo: "DNI",
                 nro: "32.924.007"
-            }
+            },
+            telefonos: [
+                "0303-456",
+                "4393-1886"
+            ],
+            emails: [
+                "julian@test.com"
+            ]
         }]
 
         function showMessage(e){
-            alert(e.target.id)
+            alert("Entidad:" + e.target.id)
         }
 
-        function iterateObject(obj) {
+        /*function iterateObject(obj) {
             for (prop in obj) {
                 if (typeof (obj[prop]) === "object") {
                     iterateObject(obj[prop])
@@ -77,21 +93,36 @@
             return `<span class="text-pink-400">${key}</span>`
         })
 
-        code.innerHTML = formated
+        code.innerHTML = formated*/
 
-        const codeHeight = code.offsetHeight
-        const lineHeight = window.getComputedStyle(code).lineHeight.slice(0, -2)
-        const lines = parseInt(codeHeight/lineHeight)
+        data = JSON.stringify(json_data)
 
-        for (let index = 0; index < lines; index++) {
-            count.innerHTML += `<div class="slashed-zero">${index < 9 ? "0"+ Number(index+1) : Number(index+1)}</div>`
-        }
+        let formated = data.replace(/(?<key>\"\w+\")(?::)(?<value>\[(?!\{)(.+?)(?:\]))/g, match => {
+            
+            let parts = match.split(":")
+            let key = parts[0]
+            let values = parts[1]
 
+            values = values.slice(1,-1)
+            values = values.split(",")
 
-        // Con regex -> falta detectar bien los arrays
-        /*let formated = JSON.stringify(json_data, undefined, 4)
+            key = `"<span class='text-pink-400'>${parts[0].slice(1,-1)}</span>": `
 
-        formated = formated.replace(/(?:\"|\')(?<key>[\w\s-áéíóú]+)(?:\"|\')(?:\:\s*)(?:\"|\')?(?<value>[\w\s-áéíóú]*)(?:\"|\')?/g, s => {           
+            values.map((value, i) => {
+                if(value[0] === "\"" && value[value.length-1] === "\""){
+                    value = value.slice(1,-1)
+                }
+                values[i] = `"<span class='text-slate-300'>${value}</span>"`
+            })
+
+            return key + '[' + values + ']'
+        })
+    
+        let j = JSON.parse(formated)
+
+        j = JSON.stringify(j, undefined, 4)
+
+        j = j.replace(/(?:\"|\')(?<key>[\w\s-áéíóú]+)(?:\"|\')(?:\:\s*)(?:\"|\')?(?<value>[\w\s-áéíóú.]*)(?:\"|\')?/g, s => {           
             const parts = s.split(':')
             let key = parts[0].slice(1, -1)
             let value
@@ -99,7 +130,6 @@
             if(key === "id"){
                 value = `<span id=${parts[1].slice(1)} class='text-sky-500 px-1 py-0.5 bg-slate-50 bg-opacity-10 rounded cursor-pointer' onclick='showMessage(event)'>${parts[1].slice(1)}</span>`
             } else {
-
                 value = `<span class="text-slate-300">${parts[1].slice(1)}</span>`
             }
 
@@ -108,7 +138,15 @@
             return key + value
         });
 
-        code.innerHTML = formated*/
+        code.innerHTML = j
+
+        const codeHeight = code.offsetHeight
+        const lineHeight = window.getComputedStyle(code).lineHeight.slice(0, -2)
+        const lines = parseInt(codeHeight/lineHeight)
+
+        for (let index = 0; index < lines; index++) {
+            count.innerHTML += `<div class="slashed-zero">${index < 9 ? "0"+ Number(index+1) : Number(index+1)}</div>`
+        }
 
     </script>
 
