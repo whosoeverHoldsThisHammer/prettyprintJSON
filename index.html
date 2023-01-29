@@ -8,44 +8,88 @@
 <body class="min-h-full w-full flex items-center justify-center">
 
     <div class="w-full max-w-3xl">
-        <pre id="codePreview" class="border border-slate-300 rounded-3xl px-8 py-6 text-gray-400 bg-slate-900"></pre>
+        <div class="flex overflow-hidden rounded-2xl">
+            <div id="count" class="flex-col pl-4 pr-3 py-2.5 text-right text-gray-600 bg-slate-800"></div>
+            <pre id="codePreview" class="grow px-4 py-2.5 text-gray-400 bg-slate-900"></pre>
+        </div>
+        
+        
     </div>
-
     <script>
-
+        const count = document.getElementById("count")
         const code = document.getElementById("codePreview")
 
-        let json_data = [{
+        const json_data = [{
             id: "a1c33bd1-0528-4de3-a745-44d95e7ac3d8",
             nacionalidad: "argentino",
             nombre: "Julián",
-            edad: 33,
             hermanos: [
                 {
-                    id: 447688,
+                    id: "4b89d3ab-d3bf-4189-9438-c0ebc6b56ea1",
                     nombre: "Nicolas",
                 },
                 {
+                    id: "6e4f6a0f-4e1d-43f1-b328-7b99762bfad0",
                     nombre: "Javier"
                 }
             ],
             estudios: [
                 {
-                    universitario: "UBA",
-                    notas: [7, 8, 9, 10]
+                    nombre: "Ciencias de la computación",
+                    institucion: "UBA",
+                    nivel: "universitario",
+                    materias: {
+                        nombre: "Algoritmos 1",
+                        notas: [7,8],
+                        estado: "Adeuda final"
+                    }
                 }
             ],
             documento: {
-                id: 30926334,
-                tipo: "DNI"
+                tipo: "DNI",
+                nro: "32.924.007"
             }
         }]
 
         function showMessage(e){
-            alert("id: " + e.target.id)
+            alert(e.target.id)
         }
-        
+
+        function iterateObject(obj) {
+            for (prop in obj) {
+                if (typeof (obj[prop]) === "object") {
+                    iterateObject(obj[prop])
+                } else {
+                    if(prop === "id"){
+                        obj[prop] = `<span id=${obj[prop]} class='text-sky-500 px-1 py-0.5 bg-slate-50 bg-opacity-10 rounded cursor-pointer' onclick='showMessage(event)'>${obj[prop]}</span>`
+                    } else {
+                        obj[prop] = `<span class='text-slate-300'>${obj[prop]}</span>`
+                    }
+                }
+            }
+        }
+
+        iterateObject(json_data)
+
         let formated = JSON.stringify(json_data, undefined, 4)
+
+        formated = formated.replace(/"([^"]+?)"\s*:/g, key => {
+            return `<span class="text-pink-400">${key}</span>`
+        })
+
+        code.innerHTML = formated
+
+        const codeHeight = code.offsetHeight
+        const lineHeight = window.getComputedStyle(code).lineHeight.slice(0, -2)
+        const lines = parseInt(codeHeight/lineHeight)
+
+        for (let index = 0; index < lines; index++) {
+            count.innerHTML += `<div class="slashed-zero">${index < 9 ? "0"+ Number(index+1) : Number(index+1)}</div>`
+        }
+
+
+        // Con regex -> falta detectar bien los arrays
+        /*let formated = JSON.stringify(json_data, undefined, 4)
 
         formated = formated.replace(/(?:\"|\')(?<key>[\w\s-áéíóú]+)(?:\"|\')(?:\:\s*)(?:\"|\')?(?<value>[\w\s-áéíóú]*)(?:\"|\')?/g, s => {           
             const parts = s.split(':')
@@ -64,9 +108,10 @@
             return key + value
         });
 
-        code.innerHTML = formated
+        code.innerHTML = formated*/
 
     </script>
+
 </body>
 
 </html>
